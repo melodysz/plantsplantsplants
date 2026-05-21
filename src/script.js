@@ -1,5 +1,21 @@
 let lenis;
 
+// ── Preload critical images immediately ──
+const PRELOAD_BASE = "https://raw.githubusercontent.com/lilybobj/plants/master/public/images/";
+const CRITICAL = [
+  "green grad.png", "logo.png", "club text.png", "hero border.png",
+  "botanical playground.png", "snail.png", "hero text w texture.png",
+  "Star g.png", "Star p.png", "Star y.png", "cta.png",
+  "acorn.png", "bfly.png", "flower.png", "heart.png", "key.png", "middle margin.png",
+];
+const preloadDone = Promise.all(
+  CRITICAL.map(name => new Promise(resolve => {
+    const i = new Image();
+    i.onload = i.onerror = () => resolve();
+    i.src = PRELOAD_BASE + encodeURIComponent(name);
+  }))
+);
+
 // ════════════════════════════════
 //   INTRO ANIMATION
 // ════════════════════════════════
@@ -16,39 +32,16 @@ let lenis;
   const textEl      = document.getElementById("intro-text");
 
   document.body.classList.add("intro-active");
+await new Promise(resolve => {
+  const bg = document.getElementById("intro-bg");
+  if (bg.complete) resolve();
+  else { bg.onload = resolve; bg.onerror = resolve; }
+});
 
 // Background is now set directly in HTML's <img id="intro-bg"> for instant load.
 // To switch to a video, change <img> to <video src="..." autoplay muted loop playsinline>
 // in HTML — no JS needed.
 
-  // ── Preload critical homepage images during intro ──
-  const PRELOAD_BASE = "https://raw.githubusercontent.com/lilybobj/plants/master/public/images/";
-  const CRITICAL = [
-    "green grad.png",
-    "logo.png",
-    "club text.png",
-    "hero border.png",
-    "botanical playground.png",
-    "snail.png",
-    "hero text w texture.png",
-    "Star g.png",
-    "Star p.png",
-    "Star y.png",
-    "cta.png",
-    "acorn.png",
-    "bfly.png",
-    "flower.png",
-    "heart.png",
-    "key.png",
-    "middle margin.png",
-  ];
-  const preloadDone = Promise.all(
-    CRITICAL.map(name => new Promise(resolve => {
-      const i = new Image();
-      i.onload = i.onerror = () => resolve();
-      i.src = PRELOAD_BASE + encodeURIComponent(name);
-    }))
-  );
 
 // ── Animation sequence ──
 const steps = [
@@ -80,8 +73,8 @@ requestAnimationFrame(spin);
 steps.forEach(s => setTimeout(s.fn, s.at));
 
 // ── Wait for sequence to finish AND critical images to load ──
-  const minSequenceTime = new Promise(r => setTimeout(r, 3200));
-  const maxWait         = new Promise(r => setTimeout(r, 8000)); // hard cap
+const minSequenceTime = new Promise(r => setTimeout(r, 2800));
+const maxWait         = new Promise(r => setTimeout(r, 4000)); // hard cap
   await Promise.all([
     minSequenceTime,
     Promise.race([preloadDone, maxWait]),
@@ -245,3 +238,20 @@ gsap.ticker.add((time) => {
   lenis.raf(time * 1000);
 });
 gsap.ticker.lagSmoothing(0);
+
+lenis.on('scroll', () => ScrollTrigger.update());
+
+// ── Bottom corners ──
+const cornLeft = document.querySelector(".corn-left");
+const cornRight = document.querySelector(".corn-right");
+
+gsap.ticker.add(() => {
+  const scrollY = lenis.scroll;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+const progress = Math.max(0, (scrollY - maxScroll * 0.85) / (maxScroll * 0.15));
+const translateY = 100 - (progress * 80);
+cornLeft.style.transform  = `translateY(${translateY}%)`;
+cornRight.style.transform = `translateY(${translateY}%)`;
+cornLeft.style.opacity  = 1;
+cornRight.style.opacity = 1;
+});

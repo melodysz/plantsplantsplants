@@ -73,8 +73,8 @@ requestAnimationFrame(spin);
 steps.forEach(s => setTimeout(s.fn, s.at));
 
 // ── Wait for sequence to finish AND critical images to load ──
-  const minSequenceTime = new Promise(r => setTimeout(r, 2000));
-  const maxWait         = new Promise(r => setTimeout(r, 3100)); // hard cap
+const minSequenceTime = new Promise(r => setTimeout(r, 2800));
+const maxWait         = new Promise(r => setTimeout(r, 4000)); // hard cap
   await Promise.all([
     minSequenceTime,
     Promise.race([preloadDone, maxWait]),
