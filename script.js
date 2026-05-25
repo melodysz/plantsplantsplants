@@ -73,8 +73,8 @@ requestAnimationFrame(spin);
 steps.forEach(s => setTimeout(s.fn, s.at));
 
 // ── Wait for sequence to finish AND critical images to load ──
-  const minSequenceTime = new Promise(r => setTimeout(r, 2000));
-  const maxWait         = new Promise(r => setTimeout(r, 3100)); // hard cap
+const minSequenceTime = new Promise(r => setTimeout(r, 2800));
+const maxWait         = new Promise(r => setTimeout(r, 4000)); // hard cap
   await Promise.all([
     minSequenceTime,
     Promise.race([preloadDone, maxWait]),
@@ -102,7 +102,7 @@ function img(name) { return BASE + encodeURIComponent(name); }
 document.getElementById("green-grad").src        = img("green grad.png");
 document.getElementById("logo-fixed").src        = img("logo.png");
 document.getElementById("club-text").src         = img("club text.png");
-document.getElementById("hero-bg").src           = img("hero border.png");
+document.getElementById("hero-bg").src = "https://i.ibb.co/chpNrRLm/hero-image.png";
 document.getElementById("hero-playground").src   = img("botanical playground.png");
 document.getElementById("hero-snail").src        = img("snail.png");
 document.getElementById("hero-title").src        = img("hero text w texture.png");
